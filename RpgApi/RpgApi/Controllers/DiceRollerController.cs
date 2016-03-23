@@ -26,62 +26,73 @@ namespace RpgApi.Controllers
 
             var diceDict = new Dictionary<int, int>();
 
-            if (diceType == Models.DiceRollerModels.DiceType.Standard)
+            try
             {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, new ArgumentException("Pass dictionary pairs of int values in body instead of url for standard rolls."));
-            }
-
-            else if (diceType == Models.DiceRollerModels.DiceType.Fudge)
-            {
-                diceDict.Add(6, numberOfDice);
-
-                var roller = new Models.DiceRollerModels.DiceRoller(diceDict);
-
-                var myResults = await Task.Factory.StartNew(() => roller.CalculateRoll());
-
-                foreach (var result in myResults)
+                if (diceType == Models.DiceRollerModels.DiceType.Standard)
                 {
-                    return Request.CreateResponse(HttpStatusCode.OK, new Models.DiceRollerModels.FudgeDiceRollerResponse(result.IndividualResults));
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, new ArgumentException("Pass dictionary pairs of int values in body instead of url for standard rolls."));
                 }
 
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "There was a problem.");
-            }
-
-            else if (diceType == Models.DiceRollerModels.DiceType.XWingAttack)
-            {
-                diceDict.Add(8, numberOfDice);
-
-                var roller = new Models.DiceRollerModels.DiceRoller(diceDict);
-
-                var myResults = await Task.Factory.StartNew(() => roller.CalculateRoll());
-
-                foreach (var result in myResults)
+                else if (diceType == Models.DiceRollerModels.DiceType.Fudge)
                 {
-                    return Request.CreateResponse(HttpStatusCode.OK, new Models.DiceRollerModels.XWingAttackDiceRollerResponse(result.IndividualResults));
+                    diceDict.Add(6, numberOfDice);
+
+                    var roller = new Models.DiceRollerModels.DiceRoller(diceDict);
+
+                    var myResults = await Task.Factory.StartNew(() => roller.CalculateRoll());
+
+                    foreach (var result in myResults)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, new Models.DiceRollerModels.FudgeDiceRollerResponse(result.IndividualResults));
+                    }
+
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "There was a problem.");
                 }
 
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "There was a problem.");
-            }
-
-            else if (diceType == Models.DiceRollerModels.DiceType.XWingDefense)
-            {
-                diceDict.Add(8, numberOfDice);
-
-                var roller = new Models.DiceRollerModels.DiceRoller(diceDict);
-
-                var myResults = await Task.Factory.StartNew(() => roller.CalculateRoll());
-
-                foreach (var result in myResults)
+                else if (diceType == Models.DiceRollerModels.DiceType.XWingAttack)
                 {
-                    return Request.CreateResponse(HttpStatusCode.OK, new Models.DiceRollerModels.XWingDefenseDiceRollerResponse(result.IndividualResults));
+                    diceDict.Add(8, numberOfDice);
+
+                    var roller = new Models.DiceRollerModels.DiceRoller(diceDict);
+
+                    var myResults = await Task.Factory.StartNew(() => roller.CalculateRoll());
+
+                    foreach (var result in myResults)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, new Models.DiceRollerModels.XWingAttackDiceRollerResponse(result.IndividualResults));
+                    }
+
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "There was a problem.");
                 }
 
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "There was a problem.");
-            }
+                else if (diceType == Models.DiceRollerModels.DiceType.XWingDefense)
+                {
+                    diceDict.Add(8, numberOfDice);
 
-            else
+                    var roller = new Models.DiceRollerModels.DiceRoller(diceDict);
+
+                    var myResults = await Task.Factory.StartNew(() => roller.CalculateRoll());
+
+                    foreach (var result in myResults)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, new Models.DiceRollerModels.XWingDefenseDiceRollerResponse(result.IndividualResults));
+                    }
+
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "There was a problem.");
+                }
+
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, new ArgumentException("Bad value passed for die type."));
+                }
+            }
+            catch (OutOfMemoryException e)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, new ArgumentException("Bad value passed for die type."));
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Numbers too big. Roll less dice.");
+            }
+            catch (Exception e)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Unknown error");
             }
 
         }
