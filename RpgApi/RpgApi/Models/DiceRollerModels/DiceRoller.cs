@@ -1,55 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace RpgApi.Models.DiceRollerModels
 {
     public class DiceRoller
     {
-        public Dictionary<int, int> Dice { get; private set; }
+        public IDictionary<int, int> Dice { get; private set; }
 
-        private DiceRoller()
-        {
-
-        }
-
-        public DiceRoller(Dictionary<int, int> diceToRoll)
+        public DiceRoller(IDictionary<int, int> diceToRoll)
         {
             Dice = diceToRoll;
         }
 
-        public Dictionary<int, IEnumerable<int>> CalculateRoll()
+        public IEnumerable<DiceRollerResponse> CalculateRoll()
         {
-            var resultList = new Dictionary<int, IEnumerable<int>>();
-
-            int lastTotal = new Random().Next();
-
-            foreach (var dieSet in Dice)
+            try
             {
-                var random = new Random((lastTotal * new Random().Next()));
+                System.Threading.Thread.Sleep(1);
 
-                int totalResults = 0;
+                var resultList = new List<DiceRollerResponse>();
 
-                var results = new List<int>();
+                var myRandom = new Random();
 
-                for (int i = 0; i < dieSet.Value; i++)
+                foreach (var dieSet in Dice)
                 {
-                    var dieRoll = random.Next(1, dieSet.Key);
+                    var response = new DiceRollerResponse();
 
-                    results.Add(dieRoll);
+                    var results = new List<int>();
 
-                    totalResults = totalResults + dieRoll;
+                    for (int i = 0; i < dieSet.Value; i++)
+                    {
+                        var dieRoll = myRandom.Next(1, (dieSet.Key + 1));
+
+                        results.Add(dieRoll);
+                    }
+
+                    response.NumberOfSides = dieSet.Key;
+                    response.NumberOfDiceRolled = dieSet.Value;
+                    response.IndividualResults = results;
+
+                    resultList.Add(response);
                 }
 
-                results.Add(totalResults);
-
-                lastTotal = totalResults;
-
-                resultList.Add(dieSet.Key, results);
+                return resultList;
             }
-
-            return resultList;
+            catch (System.OutOfMemoryException e)
+            {
+                throw new OutOfMemoryException("Numbers too large. Roll less dice at a time.", e);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("There has been an unknown error", e);
+            }
         }
+    }
+
+    public enum DiceType
+    {
+        Standard = 0,
+        Fudge = 1,
+        XWingAttack = 2,
+        XWingDefense = 3
+
     }
 }
