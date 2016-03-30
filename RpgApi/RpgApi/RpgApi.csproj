@@ -141,12 +141,15 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\DiceRollerController.cs" />
+    <Compile Include="Controllers\NPCGeneratorController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\DiceRollerModels\DiceRoller.cs" />
     <Compile Include="Models\DiceRollerModels\DiceRollerResponse.cs" />
     <Compile Include="Models\ErrorLogModels\ErrorLog.cs" />
+    <Compile Include="Models\NPCGeneratorModels\DnD\FifthEdition\NPC.cs" />
+    <Compile Include="Models\NPCGeneratorModels\INPC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -181,7 +184,9 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Models\NPCGeneratorModels\DnD\Pathfinder\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

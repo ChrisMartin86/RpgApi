@@ -501,5 +501,10 @@
             <param name="diceToRoll">Key-Value pairs, with the key being the number of sides of each type to roll, and the value being the number of that type to roll.</param>
             <returns>HttpResponseCode and/or List of results. Results will have the following properties: NumberOfSides, NumberOfDiceRolled, IndividualResults,HighestRoll, LowestRoll, and Total</returns>
         </member>
+        <member name="T:RpgApi.Models.NPCGeneratorModels.INPC">
+            <summary>
+            NPC Interface
+            </summary>
+        </member>
     </members>
 </doc>

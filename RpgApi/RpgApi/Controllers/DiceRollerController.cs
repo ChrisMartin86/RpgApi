@@ -21,6 +21,7 @@ namespace RpgApi.Controllers
         [HttpGet]
         public async Task<HttpResponseMessage> Get(Models.DiceRollerModels.DiceType diceType, int numberOfDice)
         {
+            // Checking for nulls in case of badly formed request.
             if (null == diceType || null == numberOfDice)
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Bad value for diceType or numberOfDice");
 
@@ -105,8 +106,8 @@ namespace RpgApi.Controllers
         [HttpPost]
         public async Task<HttpResponseMessage> Post([FromBody]IDictionary<int, int> diceToRoll)
         {
-            if (null == diceToRoll)
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "diceToRoll cannot be null");
+            if (null == diceToRoll || diceToRoll.Count == 0)
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "diceToRoll cannot be null or empty.");
 
             var diceRoller = new Models.DiceRollerModels.DiceRoller(diceToRoll);
 
