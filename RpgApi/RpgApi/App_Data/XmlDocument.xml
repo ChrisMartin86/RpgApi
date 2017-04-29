@@ -486,20 +486,23 @@
             Dice Roller API
             </summary>
         </member>
-        <member name="M:RpgApi.Controllers.DiceRollerController.Get(RpgApi.Models.DiceRollerModels.DiceType,System.Int32)">
-            <summary>
-            Roll special dice.
-            </summary>
-            <param name="diceType">1 = Fudge, 2 = X Wing Attack, 3 = X Wing Defense</param>
-            <param name="numberOfDice">The number of dice to roll.</param>
-            <returns>HttpResponseMessage with status code and/or requested roll.</returns>
-        </member>
         <member name="M:RpgApi.Controllers.DiceRollerController.Post(System.Collections.Generic.IDictionary{System.Int32,System.Int32})">
             <summary>
-            Gets dice results for requested dice.
+            Generate dice results
             </summary>
-            <param name="diceToRoll">Key-Value pairs, with the key being the number of sides of each type to roll, and the value being the number of that type to roll.</param>
-            <returns>HttpResponseCode and/or List of results. Results will have the following properties: NumberOfSides, NumberOfDiceRolled, IndividualResults,HighestRoll, LowestRoll, and Total</returns>
+            <seealso cref="T:RpgApi.Models.DiceRollerModels.DiceRollerResult"/>
+            <seealso cref="T:System.Collections.Generic.IDictionary`2"/>
+            <seealso cref="T:System.Net.Http.HttpResponseMessage"/>
+            <seealso cref="T:System.Net.HttpStatusCode"/>
+            <param name="diceToRoll">Key-Value pairs, with both key and value being of type int.Key should be the number of sides of each type to roll, and the value should be how many to roll.</param>
+            <returns>HttpStatusCode and/or DiceRollerResult of results.</returns>
+        </member>
+        <member name="T:RpgApi.Models.DiceRollerModels.DiceRollerResult">
+            <summary>
+            The result of the CalculateRoll() method of the DiceRoller class. Returned as an IEnumerable. Also the result returned from the GET method of the DiceRollerController
+            </summary>
+            <seealso cref="T:RpgApi.Models.DiceRollerModels.DiceRoller"/>
+            <seealso cref="T:System.Collections.Generic.IEnumerable`1"/>
         </member>
         <member name="T:RpgApi.Models.NPCGeneratorModels.INPC">
             <summary>

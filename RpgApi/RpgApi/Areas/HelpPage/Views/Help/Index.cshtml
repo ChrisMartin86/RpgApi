@@ -6,7 +6,7 @@
 @model Collection<ApiDescription>
 
 @{
-    ViewBag.Title = "ASP.NET Web API Help Page";
+    ViewBag.Title = "RpgAPI.NET Help Page";
 
     // Group APIs by controller
     ILookup<HttpControllerDescriptor, ApiDescription> apiGroups = Model.ToLookup(api => api.ActionDescriptor.ControllerDescriptor);
@@ -23,9 +23,8 @@
 <div id="body" class="help-page">
     <section class="featured">
         <div class="content-wrapper">
-            <h2>Introduction</h2>
             <p>
-                Provide a general description of your APIs here.
+                Welcome to RpgAPI.NET. Documentation for all public endpoints below. If I missed anything, email me at chris@rpgapi.net.
             </p>
         </div>
     </section>

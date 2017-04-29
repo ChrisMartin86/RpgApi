@@ -19,6 +19,12 @@ namespace RpgApi
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+            config.Routes.MapHttpRoute(
+                name: "DiceRoller",
+                routeTemplate: "api/{controller}/{diceToRoll})",
+                defaults: new { diceToRoll = RouteParameter.Optional }
+            );
         }
     }
 }

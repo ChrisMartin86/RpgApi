@@ -145,8 +145,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\DiceRollerModels\SpecialDiceResponse\XWingDefenseDiceRollerResponse.cs" />
+    <Compile Include="Models\DiceRollerModels\SpecialDiceResponse\XWingAttackDiceRollerResponse.cs" />
+    <Compile Include="Models\DiceRollerModels\SpecialDiceResponse\FudgeDiceRollerResponse.cs" />
     <Compile Include="Models\DiceRollerModels\DiceRoller.cs" />
-    <Compile Include="Models\DiceRollerModels\DiceRollerResponse.cs" />
+    <Compile Include="Models\DiceRollerModels\DiceRollerResult.cs" />
     <Compile Include="Models\ErrorLogModels\ErrorLog.cs" />
     <Compile Include="Models\NPCGeneratorModels\DnD\FifthEdition\NPC.cs" />
     <Compile Include="Models\NPCGeneratorModels\INPC.cs" />
@@ -155,7 +158,6 @@
   <ItemGroup>
     <Content Include="Views\web.config" />
     <Content Include="packages.config" />
-    <Content Include="PowerShell\RpgApi\RpgApi.psm1" />
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
     <Content Include="Areas\HelpPage\Views\Shared\_Layout.cshtml" />

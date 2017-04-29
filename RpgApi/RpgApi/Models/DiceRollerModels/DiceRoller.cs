@@ -4,9 +4,9 @@ using System.Security.Cryptography;
 
 namespace RpgApi.Models.DiceRollerModels
 {
-    public class DiceRoller
+    internal class DiceRoller
     {
-
+        // This uses a lot of the example code from teh RNGCryptoServiceProvider documentation. I need to put in the URL, but I no longer have it handy.
         private static RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider();
 
         public IDictionary<int, int> Dice { get; private set; }
@@ -16,23 +16,21 @@ namespace RpgApi.Models.DiceRollerModels
             Dice = diceToRoll;
         }
 
-        public IEnumerable<DiceRollerResponse> CalculateRoll()
+        public IEnumerable<DiceRollerResult> CalculateRoll()
         {
             try
             {
-                var resultList = new List<DiceRollerResponse>();
+                var resultList = new List<DiceRollerResult>();
 
-                //var myRandom = new Random(DateTime.Now.Millisecond);
-
-                foreach (var dieSet in Dice)
+                foreach (KeyValuePair<int, int> dieSet in Dice)
                 {
-                    var response = new DiceRollerResponse();
+                    var response = new DiceRollerResult();
 
                     var results = new List<int>();
 
                     for (int i = 0; i < dieSet.Value; i++)
                     {
-                        var dieRoll = RollDice((byte)dieSet.Key);
+                        byte dieRoll = RollDice((byte)dieSet.Key);
 
                         results.Add(dieRoll);
                     }
@@ -46,13 +44,9 @@ namespace RpgApi.Models.DiceRollerModels
 
                 return resultList;
             }
-            catch (System.OutOfMemoryException e)
+            catch
             {
-                throw new OutOfMemoryException("Numbers too large. Roll less dice at a time.", e);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("There has been an unknown error", e);
+                throw;
             }
         }
 
@@ -89,14 +83,5 @@ namespace RpgApi.Models.DiceRollerModels
             // to use.
             return roll < numSides * fullSetsOfValues;
         }
-    }
-
-    public enum DiceType
-    {
-        Standard = 0,
-        Fudge = 1,
-        XWingAttack = 2,
-        XWingDefense = 3
-
     }
 }

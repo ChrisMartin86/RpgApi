@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Threading.Tasks;
+using RpgApi.Models.DiceRollerModels;
 
 namespace RpgApi.Controllers
 {
@@ -13,111 +14,29 @@ namespace RpgApi.Controllers
     public class DiceRollerController : ApiController
     {
         /// <summary>
-        /// Roll special dice.
+        /// Generate dice results
         /// </summary>
-        /// <param name="diceType">1 = Fudge, 2 = X Wing Attack, 3 = X Wing Defense</param>
-        /// <param name="numberOfDice">The number of dice to roll.</param>
-        /// <returns>HttpResponseMessage with status code and/or requested roll.</returns>
-        [HttpGet]
-        public async Task<HttpResponseMessage> Get(Models.DiceRollerModels.DiceType diceType, int numberOfDice)
-        {
-            // Checking for nulls in case of badly formed request.
-            if (null == diceType || null == numberOfDice)
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Bad value for diceType or numberOfDice");
-
-            var diceDict = new Dictionary<int, int>();
-
-            try
-            {
-                if (diceType == Models.DiceRollerModels.DiceType.Standard)
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, new ArgumentException("Pass dictionary pairs of int values in body instead of url for standard rolls."));
-                }
-
-                else if (diceType == Models.DiceRollerModels.DiceType.Fudge)
-                {
-                    diceDict.Add(6, numberOfDice);
-
-                    var roller = new Models.DiceRollerModels.DiceRoller(diceDict);
-
-                    var myResults = await Task.Factory.StartNew(() => roller.CalculateRoll());
-
-                    foreach (var result in myResults)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, new Models.DiceRollerModels.FudgeDiceRollerResponse(result.IndividualResults));
-                    }
-
-                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "There was a problem.");
-                }
-
-                else if (diceType == Models.DiceRollerModels.DiceType.XWingAttack)
-                {
-                    diceDict.Add(8, numberOfDice);
-
-                    var roller = new Models.DiceRollerModels.DiceRoller(diceDict);
-
-                    var myResults = await Task.Factory.StartNew(() => roller.CalculateRoll());
-
-                    foreach (var result in myResults)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, new Models.DiceRollerModels.XWingAttackDiceRollerResponse(result.IndividualResults));
-                    }
-
-                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "There was a problem.");
-                }
-
-                else if (diceType == Models.DiceRollerModels.DiceType.XWingDefense)
-                {
-                    diceDict.Add(8, numberOfDice);
-
-                    var roller = new Models.DiceRollerModels.DiceRoller(diceDict);
-
-                    var myResults = await Task.Factory.StartNew(() => roller.CalculateRoll());
-
-                    foreach (var result in myResults)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, new Models.DiceRollerModels.XWingDefenseDiceRollerResponse(result.IndividualResults));
-                    }
-
-                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "There was a problem.");
-                }
-
-                else
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, new ArgumentException("Bad value passed for die type."));
-                }
-            }
-            catch (OutOfMemoryException e)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Numbers too big. Roll less dice.");
-            }
-            catch (Exception e)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Unknown error");
-            }
-
-        }
-
-        /// <summary>
-        /// Gets dice results for requested dice.
-        /// </summary>
-        /// <param name="diceToRoll">Key-Value pairs, with the key being the number of sides of each type to roll, and the value being the number of that type to roll.</param>
-        /// <returns>HttpResponseCode and/or List of results. Results will have the following properties: NumberOfSides, NumberOfDiceRolled, IndividualResults,HighestRoll, LowestRoll, and Total</returns>
+        /// <seealso cref="DiceRollerResult"/>
+        /// <seealso cref="IDictionary{TKey, TValue}"/>
+        /// <seealso cref="HttpResponseMessage"/>
+        /// <seealso cref="HttpStatusCode"/>
+        /// <param name="diceToRoll">Key-Value pairs, with both key and value being of type int.Key should be the number of sides of each type to roll, and the value should be how many to roll.</param>
+        /// <returns>HttpStatusCode and/or DiceRollerResult of results.</returns>
         [HttpPost]
         public async Task<HttpResponseMessage> Post([FromBody]IDictionary<int, int> diceToRoll)
         {
             if (null == diceToRoll || diceToRoll.Count == 0)
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "diceToRoll cannot be null or empty.");
 
-            var diceRoller = new Models.DiceRollerModels.DiceRoller(diceToRoll);
+            var diceRoller = new DiceRoller(diceToRoll);
 
             try
             {
-                var results = await Task.Factory.StartNew(() => diceRoller.CalculateRoll());
+                IEnumerable<DiceRollerResult> results = await Task.Run(() => diceRoller.CalculateRoll());
 
                 return Request.CreateResponse(HttpStatusCode.OK, results);
             }
-            catch (System.OutOfMemoryException e)
+            catch (OutOfMemoryException)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Numbers too big. Roll less dice at a time.");
             }
@@ -126,6 +45,5 @@ namespace RpgApi.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
         }
-
     }
 }
