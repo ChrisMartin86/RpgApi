@@ -4,28 +4,29 @@ using System.Security.Cryptography;
 
 namespace RpgApi.Models.DiceRollerModels
 {
+    /// <summary>
+    /// A class for rolling standard dice.
+    /// </summary>
     internal class DiceRoller
     {
-        // This uses a lot of the example code from teh RNGCryptoServiceProvider documentation. I need to put in the URL, but I no longer have it handy.
+        // This uses a lot of the example code from teh RNGCryptoServiceProvider documentation found at https://msdn.microsoft.com/en-us/library/system.security.cryptography.rngcryptoserviceprovider%28v=vs.110%29.aspx.
         private static RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider();
 
         public IDictionary<int, int> Dice { get; private set; }
 
-        public DiceRoller(IDictionary<int, int> diceToRoll)
+        public DiceRoller(IDictionary<int, int> dice)
         {
-            Dice = diceToRoll;
+            Dice = dice;
         }
 
-        public IEnumerable<DiceRollerResult> CalculateRoll()
+        public DiceRollerResult CalculateRoll()
         {
             try
             {
-                var resultList = new List<DiceRollerResult>();
+                var resultList = new DiceRollerResult();
 
                 foreach (KeyValuePair<int, int> dieSet in Dice)
                 {
-                    var response = new DiceRollerResult();
-
                     var results = new List<int>();
 
                     for (int i = 0; i < dieSet.Value; i++)
@@ -35,11 +36,11 @@ namespace RpgApi.Models.DiceRollerModels
                         results.Add(dieRoll);
                     }
 
-                    response.NumberOfSides = dieSet.Key;
-                    response.NumberOfDiceRolled = dieSet.Value;
-                    response.IndividualResults = results;
+                    int numberOfSides = dieSet.Key;
+                    int numberOfDiceRolled = dieSet.Value;
+                    
 
-                    resultList.Add(response);
+                    resultList.Add(new DiceRoll(numberOfSides, numberOfDiceRolled, results));
                 }
 
                 return resultList;
@@ -50,10 +51,10 @@ namespace RpgApi.Models.DiceRollerModels
             }
         }
 
-        public static byte RollDice(byte numberSides)
+        public static byte RollDice(byte numberOfSides)
         {
-            if (numberSides <= 0)
-                throw new ArgumentOutOfRangeException("numberSides");
+            if (numberOfSides <= 0)
+                throw new ArgumentOutOfRangeException("numberOfSides cannot be less than zero");
 
             // Create a byte array to hold the random value.
             byte[] randomNumber = new byte[1];
@@ -62,14 +63,14 @@ namespace RpgApi.Models.DiceRollerModels
                 // Fill the array with a random value.
                 rngCsp.GetBytes(randomNumber);
             }
-            while (!IsFairRoll(randomNumber[0], numberSides));
+            while (!isFairRoll(randomNumber[0], numberOfSides));
             // Return the random number mod the number
             // of sides.  The possible values are zero-
             // based, so we add one.
-            return (byte)((randomNumber[0] % numberSides) + 1);
+            return (byte)((randomNumber[0] % numberOfSides) + 1);
         }
 
-        private static bool IsFairRoll(byte roll, byte numSides)
+        private static bool isFairRoll(byte roll, byte numSides)
         {
             // There are MaxValue / numSides full sets of numbers that can come up
             // in a single byte.  For instance, if we have a 6 sided die, there are

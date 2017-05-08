@@ -32,9 +32,9 @@ namespace RpgApi.Controllers
 
             try
             {
-                IEnumerable<DiceRollerResult> results = await Task.Run(() => diceRoller.CalculateRoll());
+                DiceRollerResult result = await Task.Run(() => diceRoller.CalculateRoll());
 
-                return Request.CreateResponse(HttpStatusCode.OK, results);
+                return Request.CreateResponse(HttpStatusCode.OK, result);
             }
             catch (OutOfMemoryException)
             {
